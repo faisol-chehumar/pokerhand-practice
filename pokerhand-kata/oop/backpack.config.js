@@ -13,11 +13,25 @@ module.exports = {
 
     config.module.rules.push({
       test: /\.ts$/,
-      loader: 'ts-loader',
-      options: {
-        // disable type checker - we will use it in fork plugin
-        transpileOnly: true,
-      },
+      use: [
+        {
+          loader: 'cache-loader',
+        },
+        {
+          loader: 'thread-loader',
+          options: {
+            workers: require('os').cpus().length - 1,
+            poolTimeout: Infinity,
+          },
+        },
+        {
+          loader: 'ts-loader',
+          options: {
+            happyPackMode: true,
+            transpileOnly: true,
+          },
+        },
+      ],
     })
 
     config.plugins = [new ForkTsCheckerWebpackPlugin()]
